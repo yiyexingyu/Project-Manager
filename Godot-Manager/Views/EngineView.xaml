@@ -1,0 +1,224 @@
+<UserControl
+    x:Class="Godot_Manager.Views.EngineView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="clr-namespace:Godot_Manager.Helpers"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:Godot_Manager.Models"
+    d:DesignHeight="600"
+    d:DesignWidth="900"
+    Background="{StaticResource BackgroundBrush}"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <helpers:BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  标题  -->
+        <StackPanel
+            Grid.Row="0"
+            Margin="0,0,0,16"
+            Orientation="Horizontal">
+            <TextBlock
+                Margin="0,0,10,0"
+                VerticalAlignment="Center"
+                FontSize="24"
+                Text="⚙️" />
+            <TextBlock
+                VerticalAlignment="Center"
+                FontSize="22"
+                FontWeight="SemiBold"
+                Text="引擎管理" />
+        </StackPanel>
+
+        <!--  扫描路径配置  -->
+        <Border
+            Grid.Row="1"
+            Margin="0,0,0,12"
+            Padding="12"
+            Style="{StaticResource CardBorder}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Margin="0,0,12,0"
+                    VerticalAlignment="Center"
+                    FontSize="14"
+                    FontWeight="SemiBold"
+                    Text="扫描路径配置" />
+                <TextBox
+                    Grid.Column="1"
+                    Width="250"
+                    Margin="0,0,8,0"
+                    Style="{StaticResource ModernTextBox}"
+                    Text="{Binding NewScanPath, UpdateSourceTrigger=PropertyChanged}" />
+                <Button
+                    Grid.Column="2"
+                    Margin="0,0,4,0"
+                    Command="{Binding BrowsePathCommand}"
+                    Content="📂"
+                    Style="{StaticResource IconButton}" />
+                <Button
+                    Grid.Column="2"
+                    Margin="40,0,0,0"
+                    Padding="10,6"
+                    Command="{Binding AddScanPathCommand}"
+                    Content="添加"
+                    FontSize="12"
+                    Style="{StaticResource PrimaryButton}" />
+            </Grid>
+        </Border>
+
+        <!--  引擎列表  -->
+        <Grid Grid.Row="2">
+            <!--  加载中  -->
+            <Border
+                Padding="40"
+                Background="{StaticResource SurfaceBrush}"
+                CornerRadius="10"
+                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        FontSize="40"
+                        Text="⏳" />
+                    <TextBlock
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Center"
+                        FontSize="16"
+                        Foreground="{StaticResource TextSecondaryBrush}"
+                        Text="正在扫描引擎..." />
+                </StackPanel>
+            </Border>
+
+            <ListView ItemsSource="{Binding Engines}" Style="{StaticResource ModernListView}">
+                <ListView.ItemTemplate>
+                    <DataTemplate DataType="{x:Type models:GodotEngine}">
+                        <Border
+                            Margin="0,0,0,4"
+                            Padding="14,12"
+                            Background="{StaticResource SurfaceBrush}"
+                            BorderBrush="{StaticResource BorderLightBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <!--  默认标记  -->
+                                <Border
+                                    Grid.Column="0"
+                                    Width="40"
+                                    Height="40"
+                                    Margin="0,0,14,0"
+                                    Background="{StaticResource PrimaryLightBrush}"
+                                    CornerRadius="8"
+                                    Visibility="{Binding IsDefault, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontSize="18"
+                                        Text="⭐" />
+                                </Border>
+                                <StackPanel Grid.Column="1">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock
+                                            FontSize="16"
+                                            FontWeight="SemiBold"
+                                            Text="{Binding Version, StringFormat='Godot {0}'}" />
+                                        <Border
+                                            Margin="8,0,6,0"
+                                            Padding="6,2"
+                                            Background="{StaticResource PrimaryLightBrush}"
+                                            CornerRadius="4">
+                                            <TextBlock
+                                                FontSize="11"
+                                                Foreground="{StaticResource PrimaryDarkBrush}"
+                                                Text="{Binding Branch}" />
+                                        </Border>
+                                        <Border
+                                            Padding="6,2"
+                                            Background="{StaticResource BackgroundBrush}"
+                                            CornerRadius="4">
+                                            <TextBlock
+                                                FontSize="11"
+                                                Foreground="{StaticResource TextSecondaryBrush}"
+                                                Text="{Binding ReleaseType}" />
+                                        </Border>
+                                    </StackPanel>
+                                    <TextBlock
+                                        MaxWidth="400"
+                                        Margin="0,4,0,0"
+                                        FontSize="11"
+                                        Foreground="{StaticResource TextMutedBrush}"
+                                        Text="{Binding ExecutablePath}"
+                                        TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                                <StackPanel
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal">
+                                    <Button
+                                        Margin="0,0,8,0"
+                                        Padding="10,6"
+                                        Command="{Binding DataContext.SetDefaultCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
+                                        CommandParameter="{Binding}"
+                                        Content="设为默认"
+                                        FontSize="12"
+                                        Style="{StaticResource SecondaryButton}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <!--  引擎下载预留区  -->
+            <Border
+                Margin="0,12,0,0"
+                Padding="12"
+                VerticalAlignment="Bottom"
+                Background="{StaticResource SurfaceBrush}"
+                BorderBrush="{StaticResource BorderLightBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <TextBlock
+                        Margin="0,0,8,0"
+                        FontSize="20"
+                        Text="⬇" />
+                    <TextBlock
+                        Margin="0,0,8,0"
+                        VerticalAlignment="Center"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Text="引擎在线下载" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="13"
+                        Foreground="{StaticResource TextMutedBrush}"
+                        Text="（即将推出）" />
+                    <Button
+                        Margin="12,0,0,0"
+                        Padding="8,4"
+                        Command="{Binding DownloadEngineCommand}"
+                        Content="了解更多"
+                        FontSize="11"
+                        Style="{StaticResource SecondaryButton}" />
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
